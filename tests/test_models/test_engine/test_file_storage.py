@@ -91,6 +91,30 @@ class TestFileStorage(unittest.TestCase):
                 self.assertEqual(line, "{}")
         self.assertIs(self.storage.reload(), None)
 
+    def test_get(self):
+        """Tests method for obtaining an instance from file storage"""
+        file_storage = FileStorage()
+        state_data = {"name": "VECINDAD"}
+        state_instance = State(**state_data)
+        file_storage.new(state_instance)
+        file_storage.save()
+        retrieval_storage = FileStorage()
+        retrieved_instance = retrieval_storage.get(State, state_instance.id)
+        self.assertEqual(retrieved_instance, state_instance, "Instances are not equal")
+
+    def test_count_method_of_file_storage(self):
+        """Tests count method for file storage"""
+        file_storage = FileStorage()
+        state_data = {"name": "VECINDAD"}
+        state_instance = State(**state_data)
+        file_storage.new(state_instance)
+        city_data = {"name": "MEXICO"}
+        city_instance = City(**city_data)
+        file_storage.new(city_instance)
+        file_storage.save()
+        count_all_instances = file_storage.count()
+        self.assertEqual(count_all_instances, len(file_storage.all()), "Count mismatch")
+
 
 if __name__ == "__main__":
     unittest.main()

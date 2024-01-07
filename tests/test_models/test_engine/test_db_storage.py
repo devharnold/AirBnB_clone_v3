@@ -81,6 +81,29 @@ class TestDBStorage(unittest.TestCase):
         output = self.query.fetchall()
         self.assertEqual(len(output), 1)
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
+    def test_get(self):
+        """Test the method for obtaining an instance from the database storage"""
+        state_data = {"name": "TEXAS"}
+        state_instance = State(**state_data)
+        storage.new(state_instance)
+        storage.save()
+        retrieved_instance = storage.get(State, state_instance.id)
+        self.assertEqual(retrieved_instance, state_instance, "Instances are not equal")
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
+    def test_count(self):
+        """Test the count method of the database storage"""
+        state_data = {"name": "VECINDAD"}
+        state_instance = State(**state_data)
+        storage.new(state_instance)
+        city_data = {"name": "MEXICO", "state_id": state_instance.id}
+        city_instance = City(**city_data)
+        storage.new(city_instance)
+        storage.save()
+        count_all_instances = storage.count()
+        self.assertEqual(count_all_instances, len(storage.all()), "Count mismatch")
+
 
 if __name__ == "__main__":
     unittest.main()
