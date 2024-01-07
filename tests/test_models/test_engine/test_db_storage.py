@@ -51,35 +51,35 @@ class TestDBStorage(unittest.TestCase):
     def test_read_tables(self):
         """existing tables"""
         self.query.execute("SHOW TABLES")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 7)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 7)
 
     @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def test_no_element_user(self):
         """no elem in users"""
         self.query.execute("SELECT * FROM users")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 0)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 0)
 
     @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def test_no_element_cities(self):
         """no elem in cities"""
         self.query.execute("SELECT * FROM cities")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 0)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 0)
 
     @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def test_add(self):
         """Test same size between storage() and existing db"""
         self.query.execute("SELECT * FROM states")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 0)
-        state = State(name="LUISILLO")
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 0)
+        state = State(name="KAKAMEGA")
         state.save()
         self.db.autocommit(True)
         self.query.execute("SELECT * FROM states")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 1)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 1)
 
 
 if __name__ == "__main__":
