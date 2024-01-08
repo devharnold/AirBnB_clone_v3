@@ -7,10 +7,31 @@ from flask import Flask, make_response, jsonify
 from models import storage
 import os
 from api.v1.views import app_views
+from flasgger import Swagger
 
 """Create a variable instance of Flask"""
 app = Flask(__name__)
-app.register_blueprint(app)
+app.url.map.strict_slashes = False
+app.register_blueprint(app_views)
+app.config['SWAGGER'] = {
+    "swagger_version": "2.0",
+    "title": "Flasgger",
+    "headers": [
+        ('Access-Control-Allow-Origin', '*'),
+        ('Acces-Control-Allow-Methods', "GET, POST,PUT, DELETE, OPTIONS"),
+        ('Access-Control-Allow-Credentials', "true"),
+    ],
+    "specs":[
+        {
+            "version": "1.0",
+            "title": "HBNB API",
+            "endpoint": 'v1_views',
+            "description": 'RESTful API for HBNB',
+            "route": '/v1/views',
+        }
+    ]
+}
+swagger = Swagger(app)
 
 
 @app.teardown_appcontext()
