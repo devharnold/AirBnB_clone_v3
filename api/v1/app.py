@@ -18,7 +18,7 @@ app.config['SWAGGER'] = {
     "title": "Flasgger",
     "headers": [
         ('Access-Control-Allow-Origin', '*'),
-        ('Acces-Control-Allow-Methods', "GET, POST,PUT, DELETE, OPTIONS"),
+        ('Acces-Control-Allow-Methods', "GET, POST, PUT, DELETE"),
         ('Access-Control-Allow-Credentials', "true"),
     ],
     "specs":[
