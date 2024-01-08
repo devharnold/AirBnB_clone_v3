@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 
 """Start a Flask app"""
-from flask import Flask, Blueprint, make_response, abort, request, jsonify
+from flask import Blueprint, make_response, abort, request, jsonify
 from models import Review, User
+from api.v1.views import app_views
 
-app = Flask(__name__)
-placesreviews_bp = Blueprint('reviews', __name__, url_prefix='/api/v1')
-
-@placesreviews_bp.route('/places/<place_id>/reviews', methods=['GET'])
+@app_views.route('/places/<place_id>/reviews', methods=['GET'])
 def get_reviews_by_places(place_id):
     """Retrieves the list of all Review objects
     If the place_id is not linked to any Place object, raise a 404
@@ -20,7 +18,7 @@ def get_reviews_by_places(place_id):
     reviews_list = [review.to_dict() for review in reviews]
     return jsonify(reviews_list)
 
-@placesreviews_bp.route('/reviews/<reviews_id>', methods=['GET'])
+@app_views.route('/reviews/<reviews_id>', methods=['GET'])
 def get_reviewobj(review_id):
     """
     Retrieves a review object
@@ -31,7 +29,7 @@ def get_reviewobj(review_id):
         abort(404)
     return jsonify(review.to_dict())
 
-@placesreviews_bp.route('/reviews/<review_id>', methods=['DELETE'])
+@app_views.route('/reviews/<review_id>', methods=['DELETE'])
 def delete_review(review_id):
     """
     is not linked to any Review object, raise a 404 
@@ -43,12 +41,12 @@ def delete_review(review_id):
     review.delete()
     return jsonify({}), 200
 
-@placesreviews_bp.route('/places/<place_id>/reviews', methods=['POST'])
+@app_views.route('/places/<place_id>/reviews', methods=['POST'])
 def create_review(place_id):
     """
     If the place_id is not linked to any Place object, raise a 404 error
     If the HTTP body request is not valid JSON, raise a 400 e
-    If the dictionary doesn’t contain the key user_id, raise a 400 
+    If the dictionary does not contain the key user_id, raise a 400 
     """
     place = next((p for p in place if p['id'] == place_id), None)
     if place is None:
@@ -77,7 +75,7 @@ def create_review(place_id):
     new_review.save()
     return jsonify(new_review.to_dict()), 201
 
-@placesreviews_bp.route('/reviews/<review_id>', methods=['PUT'])
+@app_views.route('/reviews/<review_id>', methods=['PUT'])
 def update_review(review_id):
     """
     Transform the HTTP request to a dictionary

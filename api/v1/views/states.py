@@ -1,11 +1,11 @@
 #!/usr/bin/python3
+
+"""Methods that handle all default RESTful API"""
 from flask import Flask, Blueprint, abort, jsonify, request, make_response
 from models import State
+from api.v1.views import app_views
 
-app = Flask(__name__)
-states_bp = Blueprint('states', __name__, url_prefix='/api/v1')
-
-@states_bp.route('/states', methods=['GET'])
+@app_views.route('/states', methods=['GET'])
 def get_states():
     """Retrieves a list of all states
     """
@@ -13,7 +13,7 @@ def get_states():
     states_list = [state.to_dict() for state in states]
     return jsonify(states_list)
 
-@states_bp.route('/states/<state_id>', methods=['GET'])
+@app_views.route('/states/<state_id>', methods=['GET'])
 def get_stateobj(state_id):
     """Retrieves a State Object
     If State ID not linked to any state object raise 404
@@ -23,7 +23,7 @@ def get_stateobj(state_id):
         abort(404)
     return jsonify(state.to_dict())
 
-@states_bp.route('/states/<state_id>', methods=['DELETE'])
+@app_views.route('/states/<state_id>', methods=['DELETE'])
 def delete_state(state_id):
     """Delete a state object
     If State ID not linked to any state object, raise a 404
@@ -34,7 +34,7 @@ def delete_state(state_id):
     state.delete()
     return jsonify({})
 
-@states_bp.route('/states', methods=['POST'])
+@app_views.route('/states', methods=['POST'])
 def create_state():
     """Creates a State
     Transform HTTP body request to a dictionary
@@ -52,7 +52,7 @@ def create_state():
         abort(400, description=str(e))
     return jsonify({"message": "Missing name"}), 400
 
-@states_bp.route("/states/<state_id>", methods=['PUT'])
+@app_views.route("/states/<state_id>", methods=['PUT'])
 def update_state(state_id):
     """Updates a State Object
     Transform HTTP request to a dictionary

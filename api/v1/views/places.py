@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 
-"""Start a Flask App
-Import Modules
 """
-from flask import Flask, Blueprint, make_response, jsonify, abort, request
+Import Various Modules
+"""
+from flask import Blueprint, make_response, jsonify, abort, request
 from models import Place
+from api.v1.views import app_views
 
-app = Flask(__name__)
-places_bp = Blueprint('places', __name__, url_prefix='/api/v1')
-
-@places_bp.route('/cities/<city_id>/places', methods=['GET'])
+@app_views.route('/cities/<city_id>/places', methods=['GET'])
 def get_places_by_city(city_id):
     """Get the places by city"""
     city = Place.query.get(city_id)
@@ -20,7 +18,7 @@ def get_places_by_city(city_id):
     places_list = [place.to_dict() for place in places]
     return jsonify(places_list)
 
-@places_bp.route('/places/<place_id>', methods=['GET'])
+@app_views.route('/places/<place_id>', methods=['GET'])
 def get_placeobj(place_id):
     """Get places by object"""
     place = Place.query.get(place_id)
@@ -28,7 +26,7 @@ def get_placeobj(place_id):
         abort(404)
     return jsonify(place.to_dict())
 
-@places_bp.route('/places/<place_id>', methods=['DELETE'])
+@app_views.route('/places/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
     """Delete Places"""
     place = Place.query.get(place_id)
@@ -37,7 +35,7 @@ def delete_place(place_id):
     place.delete()
     return jsonify({})
 
-@places_bp.route('/cities/<city_id>/places', methods=['POST'])
+@app_views.route('/cities/<city_id>/places', methods=['POST'])
 def create_place(city_id):
     """Create Place
     Transform HTTP request toa dictionary
@@ -67,7 +65,7 @@ def create_place(city_id):
     }
     return jsonify(new_place), 201
 
-@places_bp.route('/places/<place_id>', methods=['PUT'])
+@app_views.route('/places/<place_id>', methods=['PUT'])
 def update_place(place_id):
     """Update place
     Transform HTTP request to a dictionary
