@@ -1,31 +1,50 @@
 #!/usr/bin/python3
-
-"""Start a Flask App
-Import modules
-"""
+""" Flask Application """
 from flask import Flask, make_response, jsonify
 from models import storage
-import os
-from api.v1.views import app_views
+from api.v1.views import api_views
+from os import environ
+from flask_cors import CORS
+from flasgger import Swagger
+from flasgger.utils import swag_from
 
-"""Create a variable instance of Flask"""
 app = Flask(__name__)
-app.register_blueprint(app)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+app.register_blueprint(app_views)
+cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 
 
-@app.teardown_appcontext()
-def teardown(exception):
-    """Closes all the current storage session"""
+@app.teardown_appcontext
+def teardown_appcontext(exception):
+    """
+    Close the storage connection when the application context is torn down.
+
+    This function is registered to be called automatically when the application
+    context is about to be torn down, ensuring that the storage connection is
+    properly closed. It helps with resource management and cleanup.
+    """
     storage.close()
+
 
 @app.errorhandler(404)
 def not_found(error):
-    """Handles Error message"""
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    """ 404 Error
+    ---
+    responses:
+      404:
+        description: a resource was not found
+    """
+    return make_response(jsonify({'error': "Not found"}), 404)
+
+app.config['SWAGGER'] = {
+    'title': 'AirBnB clone Restful API',
+    'uiversion': 5.11.0
+}
+
+Swagger(app)
+
 
 if __name__ == "__main__":
     host = os.environ.get('HBNB_API_HOST', '0.0.0.0')
-    port = int(os.environ.get('HBNB_API_PORT', 5000))
-    threaded = os.environ.get('HBNB_API_THREADED', 'True').lower() == 'true'
-
-    app.run(host=host, port=port, threaded=threaded, debug=True)
+    port = int(os.environ.get('HBNB_API_PORT', '5000'))
+    app.run(host=host, port=port, threaded=True)
