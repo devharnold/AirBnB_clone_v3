@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 """ Flask Application """
-from flask import Flask, make_response, jsonify
 from models import storage
-from api.v1.views import api_views
+from api.v1.views import app_views
 from os import environ
+from flask import Flask, render_template, make_response, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
 from flasgger.utils import swag_from
@@ -38,13 +38,18 @@ def not_found(error):
 
 app.config['SWAGGER'] = {
     'title': 'AirBnB clone Restful API',
-    'uiversion': 5.11.0
+    'uiversion': 3
 }
 
 Swagger(app)
 
 
 if __name__ == "__main__":
-    host = os.environ.get('HBNB_API_HOST', '0.0.0.0')
-    port = int(os.environ.get('HBNB_API_PORT', '5000'))
+    """ Main Function """
+    host = environ.get('HBNB_API_HOST')
+    port = environ.get('HBNB_API_PORT')
+    if not host:
+        host = '0.0.0.0'
+    if not port:
+        port = '5000'
     app.run(host=host, port=port, threaded=True)
