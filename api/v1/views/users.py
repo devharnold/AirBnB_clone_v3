@@ -1,20 +1,18 @@
 #!/usr/bin/python3
 
-"""Start a Flask App"""
-from flask import Flask, Blueprint, abort, jsonify, request, make_response
+"""Methods that handle all default RESTful API"""
+from flask import Blueprint, abort, jsonify, request, make_response
 from models import User
+from api.v1.views import app_views
 
-app = Flask(__name__)
-users_bp = Blueprint('users', __name__, url_prefix='/api/v1')
-
-@users_bp.route('/users', methods=['GET'])
+@app_views.route('/users', methods=['GET'])
 def get_users():
     """Retrieves the list of all user objects"""
     users = User.query.all()
     users_list = [user.to_dict() for user in users]
     return jsonify(users_list)
 
-@users_bp.route('/users/<user_id>', methods=['GET'])
+@app_views.route('/users/<user_id>', methods=['GET'])
 def get_userobj(user_id):
     """Retrieves a user object
     If user ID not linked to any object raise 404
@@ -24,7 +22,7 @@ def get_userobj(user_id):
         abort(404)
     return jsonify(user.to_dict())
 
-@users_bp.route('/users/<user_id>', methods=['DELETE'])
+@app_views.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """Deletes a User Object
     If User ID not linked to any user object raise a 404 error
@@ -36,7 +34,7 @@ def delete_user(user_id):
     user.delete()
     return jsonify({}), 200
 
-@users_bp.route('/users', methods=['POST'])
+@app_views.route('/users', methods=['POST'])
 def create_user():
     """Creates a User
     Transform the HTTP body request to a dictionary
@@ -60,7 +58,7 @@ def create_user():
     }
     return jsonify(new_user.to_dict), 201
 
-@users_bp.route('/users/<user_id>', methods=['PUT'])
+@app_views.route('/users/<user_id>', methods=['PUT'])
 def update_user(user_id):
     """Updates a User Object
     Transform the HTTP body request to a dictionary

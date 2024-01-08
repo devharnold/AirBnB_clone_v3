@@ -1,18 +1,15 @@
 #!/usr/bin/python3
 
 """Start a Flask App"""
-from flask import Flask, Blueprint, abort, jsonify, make_response, request
+from flask import Blueprint, abort, jsonify, make_response, request
 from models import City, State
-
-app = Flask(__name__)
-cities_bp = Blueprint('cities', __name__, url_prefix='/api/v1')
-
+from api.v1.views import app_views
 states = [
     {'id': 1, 'name': 'State1'},
     {'id': 2, 'name': 'State2'},
 ]
 
-@cities_bp.route('/states/<state_id>/cities', methods=['GET'])
+@app_views.route('/states/<state_id>/cities', methods=['GET'])
 def get_cities_by_state(state_id):
     """Retrieves a list of all City objects"""
     state = City.query.get(state_id)
@@ -23,7 +20,7 @@ def get_cities_by_state(state_id):
     cities_list = [city.to_dict() for city in cities]
     return jsonify(cities_list)
 
-@cities_bp.route('/cities/<city_id>', methods=['GET'])
+@app_views.route('/cities/<city_id>', methods=['GET'])
 def get_cityobj(city_id):
     """Retrieves a City Object
     If City ID not linked to any city object, raise 404"""
@@ -32,7 +29,7 @@ def get_cityobj(city_id):
         abort(404)
     return jsonify(city.to_dict())
 
-@cities_bp.route("/cities/<city_id>", methods=["DELETE"])
+@app_views.route("/cities/<city_id>", methods=["DELETE"])
 def delete_city(city_id):
     """Deletes a City object
     If City ID not linked to city object raise a 404
@@ -44,7 +41,7 @@ def delete_city(city_id):
     city.delete()
     return jsonify({}), 200
 
-@cities_bp.route('/states/<state_id>/cities', methods=['POST'])
+@app_views.route('/states/<state_id>/cities', methods=['POST'])
 def create_city(state_id):
     """Creates a City object
     Transform HTTP requests to a dictionary
@@ -69,7 +66,7 @@ def create_city(state_id):
     new_city.save()
     return jsonify(new_city), 201
 
-@cities_bp.route("/cities/<city_id>", methods=["PUT"])
+@app_views.route("/cities/<city_id>", methods=["PUT"])
 def update_city(city_id):
     """Updates a City object
     Transforms HTTP request to a dictionary
