@@ -4,9 +4,14 @@ from flask import Flask, make_response, jsonify
 from models import storage
 from api.v1.views import api_views
 from os import environ
+from flask_cors import CORS
+from flasgger import Swagger
+from flasgger.utils import swag_from
 
 app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.register_blueprint(app_views)
+cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 
 
 @app.teardown_appcontext
@@ -30,6 +35,13 @@ def not_found(error):
         description: a resource was not found
     """
     return make_response(jsonify({'error': "Not found"}), 404)
+
+app.config['SWAGGER'] = {
+    'title': 'AirBnB clone Restful API',
+    'uiversion': 5.11.0
+}
+
+Swagger(app)
 
 
 if __name__ == "__main__":
