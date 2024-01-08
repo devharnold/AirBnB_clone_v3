@@ -51,35 +51,58 @@ class TestDBStorage(unittest.TestCase):
     def test_read_tables(self):
         """existing tables"""
         self.query.execute("SHOW TABLES")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 7)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 7)
 
     @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def test_no_element_user(self):
         """no elem in users"""
         self.query.execute("SELECT * FROM users")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 0)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 0)
 
     @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def test_no_element_cities(self):
         """no elem in cities"""
         self.query.execute("SELECT * FROM cities")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 0)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 0)
 
     @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
     def test_add(self):
         """Test same size between storage() and existing db"""
         self.query.execute("SELECT * FROM states")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 0)
-        state = State(name="LUISILLO")
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 0)
+        state = State(name="KAKAMEGA")
         state.save()
         self.db.autocommit(True)
         self.query.execute("SELECT * FROM states")
-        salida = self.query.fetchall()
-        self.assertEqual(len(salida), 1)
+        output = self.query.fetchall()
+        self.assertEqual(len(output), 1)
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
+    def test_get(self):
+        """Test the method for obtaining an instance from the database storage"""
+        state_data = {"name": "TEXAS"}
+        state_instance = State(**state_data)
+        storage.new(state_instance)
+        storage.save()
+        retrieved_instance = storage.get(State, state_instance.id)
+        self.assertEqual(retrieved_instance, state_instance, "Instances are not equal")
+
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") != 'db', 'NO DB')
+    def test_count(self):
+        """Test the count method of the database storage"""
+        state_data = {"name": "VECINDAD"}
+        state_instance = State(**state_data)
+        storage.new(state_instance)
+        city_data = {"name": "MEXICO", "state_id": state_instance.id}
+        city_instance = City(**city_data)
+        storage.new(city_instance)
+        storage.save()
+        count_all_instances = storage.count()
+        self.assertEqual(count_all_instances, len(storage.all()), "Count mismatch")
 
 
 if __name__ == "__main__":
