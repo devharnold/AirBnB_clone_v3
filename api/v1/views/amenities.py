@@ -1,20 +1,18 @@
 #!/usr/bin/python3
 
-"""Start a Flask App"""
-from flask import Flask, Blueprint, abort, jsonify, request, make_response
-from models import Amenity
+"""Methods to handling a default RESTful API"""
+from flask import Blueprint, abort, jsonify, request
+from models.amenity import Amenity
+from api.v1.views import app_views
 
-app = Flask(__name__)
-amenity_bp = Blueprint('amenities', __name__, url_prefix='/api/v1')
-
-@amenity_bp.route('/amenities', methods=['GET'])
+@app_views.route('/amenities', methods=['GET'])
 def get_amenities():
     """Retrieves a list of amenity objects"""
     amenities = Amenity.query.all()
     amenities_list = [amenity.to_dict() for amenity in amenities]
     return jsonify(amenities_list)
 
-@amenity_bp.route('/amenities/<amenity_id>', methods=['GET'])
+@app_views.route('/amenities/<amenity_id>', methods=['GET'])
 def get_amenityobj(amenity_id):
     """Retrieves a Amenity object
     If Amenity ID is not linked to any Amenity object, raise a 404
@@ -24,7 +22,7 @@ def get_amenityobj(amenity_id):
         abort(404)
     return jsonify(amenity.to_dict())
 
-@amenity_bp.route('/amenities/<amenity_id>', methods=['DELETE'])
+@app_views.route('/amenities/<amenity_id>', methods=['DELETE'])
 def delete_amenity(amenity_id):
     """Deletes a Amenity object
     Transforms HTTP request to a dictionary
@@ -36,7 +34,7 @@ def delete_amenity(amenity_id):
     amenity.delete()
     return jsonify({}), 200
 
-@amenity_bp.route('/amenities', methods=['POST'])
+@app_views.route('/amenities', methods=['POST'])
 def create_amenity():
     """Creates a Amenity
     Transforms HTTP request to a dictionary
@@ -56,7 +54,7 @@ def create_amenity():
     }
     return jsonify(new_amenity.to_dict()), 201
     
-@amenity_bp.route('/amenities/<amenity_id>', methods=['PUT'])
+@app_views.route('/amenities/<amenity_id>', methods=['PUT'])
 def update_amenity(amenity_id):
     """Updates a Amenity
     Transform HTTP request to a dictionary
