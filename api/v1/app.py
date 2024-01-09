@@ -3,7 +3,7 @@
 from models import storage
 from api.v1.views import app_views
 from os import environ
-from flask import Flask, render_template, make_response, jsonify
+from flask import Flask, make_response, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
 from flasgger.utils import swag_from
@@ -38,7 +38,7 @@ def not_found(error):
 
 app.config['SWAGGER'] = {
     'title': 'AirBnB clone Restful API',
-    'uiversion': 3
+    'uiversion': 5.11.0 
 }
 
 Swagger(app)
