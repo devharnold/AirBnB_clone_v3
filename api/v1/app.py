@@ -38,7 +38,7 @@ def not_found(error):
 
 app.config['SWAGGER'] = {
     'title': 'AirBnB clone Restful API',
-    'uiversion': 5.11.0 
+    'uiversion': '5.11.0'
 }
 
 Swagger(app)
